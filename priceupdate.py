@@ -30,7 +30,6 @@ def main():
     updateAfter = int(input())
     global price
     page = requests.get(URL, headers=headers)
-    print(page)
     soup = BeautifulSoup(page.content, 'html.parser')
     global title
     title = soup.find(id="productTitle").get_text().strip()
@@ -40,9 +39,12 @@ def main():
                   2:7].replace(',', '.'))
     time.sleep(10)
     # Start monitoring
-    while(True):
+    if(updateAfter!=0):
+        while(True):
+            priceVariationCheck()
+            time.sleep(60*60*updateAfter)
+    else:
         priceVariationCheck()
-        time.sleep(60*60*updateAfter)
 
 
 def priceVariationCheck():
@@ -55,7 +57,6 @@ def priceVariationCheck():
 
 def updateprice():
     page = requests.get(URL, headers=headers)
-    print(page)
     # If response is 200 then:
     # Parse HTML as page.content is still nascent
     soup = BeautifulSoup(page.content, 'html.parser')
