@@ -3,23 +3,30 @@ from bs4 import BeautifulSoup
 import smtplib
 import time
 
+# Declarations
+URL = ''
+fromEmail = ''
+fromEmailPwd = ''
+toEmail = ''
 headers = {
     "User Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"}
-
-# Initialization
 
 
 def main():
     # Product URL
+    global URL
     URL = input()
+    global fromEmail
     fromEmail = input()
     # Generate App password (mail) for 2FA enabled accounts, for others disable secure login from Account Settings->Security
+    global fromEmailPwd
     fromEmailPwd = input()
+    global toEmail
     toEmail = input()
-    updateprice(URL, fromEmail, fromEmailPwd, toEmail)
+    updateprice()
 
 
-def updateprice(URL, fromEmail, fromEmailPwd, toEmail):
+def updateprice():
     page = requests.get(URL, headers=headers)
     # If response is 200 then:
     # Parse HTML as page.content is still nascent
@@ -31,13 +38,13 @@ def updateprice(URL, fromEmail, fromEmailPwd, toEmail):
     # I chose float since it was easiet to just replace ',' with '.' and make it float
     priceNum = float(price[2:7].replace(',', '.'))
     # Email update if price falls
-    if(priceNum <= 1.0):
-        mailer(URL, title, priceNum, fromEmail, fromEmailPwd, toEmail)
+    if(priceNum >= 1.0):
+        mailer(title, priceNum)
 
 # mailer() method uses Gmail's SMTP
 
 
-def mailer(URL, title, currentPrice, fromEmail, fromEmailPwd, toEmail):
+def mailer(title, currentPrice):
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.ehlo()
     server.starttls()
